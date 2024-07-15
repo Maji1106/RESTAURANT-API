@@ -3,11 +3,27 @@ const app = express();
 require("dotenv").config();
 const PORT = process.env.PORT || 5000;
 const restaurantRouter = require("./routers/restaurant.router");
+const db = require("./models/")
+const role = db.Role;
+
+//Dev mode
+db.Sequelize.sync({force:true}).then(()=>{
+  initRole();
+  console.log("Drop and Sync DB")
+}) 
+
+
+const initRole = () =>{
+  role.create({ id: 1, name: "user" });
+role.create({ id: 2, name: "moderator" });
+role.create({ id: 3, name: "admin" });
+}
+
 
 //use middleware
+app.use(express.json()); // สำหรับ parsing application/json
+app.use(express.urlencoded({ extended: true })); // สำหรับ parsing application/x-www-form-urlencoded
 app.use("/api/v1/restaurants", restaurantRouter);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("<h1>Hello Restaurant API</h1>");

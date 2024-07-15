@@ -1,7 +1,7 @@
-const { DataType } = require("sequelize");
+const { DataType, DataTypes } = require("sequelize");
 const sequelize = require("./db");
-//define DB Schema
-const Restaurant = sequelize.define("Restaurant", {
+
+const Restaurant = sequelize.define("restaurant", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -11,11 +11,11 @@ const Restaurant = sequelize.define("Restaurant", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  type: {
+  rtype: {
     type: DataTypes.STRING,
     autoIncrement: false,
   },
-  ImageUrl: {
+  img: {
     type: DataTypes.STRING,
     autoIncrement: false,
   },

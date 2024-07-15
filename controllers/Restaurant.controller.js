@@ -1,83 +1,89 @@
 const Restaurant = require("../models/restaurant.model");
 
-//Create and save a new Restaurant
+// Create and save a new Restaurant
 exports.create = async (req, res) => {
-    console.log(req.body);
-  const { name, type, imageUrl } = req.body;
-  
-  //Validate data
-  if (!name || !type || !imageUrl) {
-    res.status(400).send({
-      message: "Name, Type or ImageUrl can not be empty!",
-    });
-    return;
+  const { name, rtype, img } = req.body;
+
+  if (!name || !rtype || !img) {
+    return res
+      .status(400)
+      .send({ message: "Name, Type or ImageUrl cannot be empty!" });
   }
 
-  await Restaurant.findOne({ where: { name: name } }).then((restaurant) => {
-    if (restaurant) {
-      res.status(400).send({
-        message: " Restaurant already exists! ",
-      });
-      return;
-    }
-    // create a restaurant
-    const newRestaurant = {
-      name: name,
-      type: type,
-      imageUrl: imageUrl,
-    };
-    Restaurant.create(newRestaurant)
-      .then((data) => {
-        res.send(data);
-      })
-      .catch((error) => {
-        res.status(500).send({
-          message:
-            error.message ||
-            "Something error occured while creating the restaurant.",
-        });
-      });
-  });
-};
+  const restaurant = await Restaurant.findOne({ where: { name: name } });
+  if (restaurant) {
+    return res.status(400).send({ message: "Restaurant already exists!" });
+  }
 
-//
-   
-
-//Get all restaurant
-
-exports.getAll = async(req,res) =>{
-    await Restaurant.findAll().then((data)=>{
-        res.send(data)
-    }).catch((error) => {
-        res.status(500).send({
-          message:
-            error.message ||
-            "Something error occured while creating the restaurant.",
-        });
-    })
-}
-
-
-//Get byID Restaurant
-exports.get = async (req, res) => {
-  await Restaurant.findAll()
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((error) => {
-      res.status(500).send({
+  const newRestaurant = { name, rtype, img };
+  try {
+    const data = await Restaurant.create(newRestaurant);
+    res.send(data);
+  } catch (error) {
+    res
+      .status(500)
+      .send({
         message:
           error.message ||
-          "Something error occured while creating the restaurant.",
+          "Something error occurred while creating the restaurant.",
       });
-    });
+  }
 };
 
+exports.getAll = async (req, res) => {
+  try {
+    const data = await Restaurant.findAll();
+    res.send(data);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: error.message || "Something error occurred." });
+  }
+};
 
+exports.getById = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const data = await Restaurant.findByPk(id);
+    if (!data) {
+      return res
+        .status(404)
+        .send({ message: "Not found Restaurant with id " + id });
+    }
+    res.send(data);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: error.message || "Something error occurred." });
+  }
+};
 
+exports.update = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const num = await Restaurant.update(req.body, { where: { id } });
+    if (num[0] === 1) {
+      return res.send({ message: "Restaurant updated successfully" });
+    }
+    res.status(404).send({ message: "Cannot update restaurant with id " + id });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: error.message || "Something error occurred." });
+  }
+};
 
-
-
-
-//Update a restuarant
-export.Update = asy
+exports.delete = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const num = await Restaurant.destroy({ where: { id } });
+    if (num === 1) {
+      return res.send({ message: "Restaurant deleted successfully" });
+    }
+    res.status(404).send({ message: "Cannot delete restaurant with id " + id });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: error.message || "Something error occurred." });
+  }
+};
