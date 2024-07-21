@@ -1,9 +1,9 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("./db");
-const { PASSWORD } = require("../config/db.config");
 
+// Define User Schema
 const User = sequelize.define("user", {
-  uesrname: {
+  username: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -16,5 +16,13 @@ const User = sequelize.define("user", {
     allowNull: false,
   },
 });
+
+User.sync({ force: true })
+  .then(() => {
+    console.log("User table created or already exists");
+  })
+  .catch((error) => {
+    console.log("Error creating User table:", error);
+  });
 
 module.exports = User;

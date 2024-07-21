@@ -1,8 +1,15 @@
 const {DataTypes} = require("sequelize");
 const sequelize = require ("./db");
 
-const Role =Sequelize.define("role",{
+const Role = sequelize.define("role",{
     id:{
-        type:data
+        type:DataTypes.INTEGER,
+        primaryKey:true,
+        autoIncrement:true
+    },
+    name:{
+        type:DataTypes.STRING,
+        allowNull:false
     }
 })
+module.exports = Role

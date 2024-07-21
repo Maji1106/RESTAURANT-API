@@ -60,30 +60,51 @@ exports.getById = async (req, res) => {
 
 exports.update = async (req, res) => {
   const id = req.params.id;
-  try {
-    const num = await Restaurant.update(req.body, { where: { id } });
-    if (num[0] === 1) {
-      return res.send({ message: "Restaurant updated successfully" });
-    }
-    res.status(404).send({ message: "Cannot update restaurant with id " + id });
-  } catch (error) {
-    res
-      .status(500)
-      .send({ message: error.message || "Something error occurred." });
-  }
+  await Restaurant.update(req.body, {
+    where: {
+      id: id,
+    },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.send({ message: "Restaurant was update successfully" });
+      } else {
+        res.send({
+          message:
+            "Cannot update restaurant with id" +
+            id +
+            ". Maybe restaurant was not found or res.body is empty!",
+        });
+      }
+    })
+    .catch((error) => {
+      res.status(500).send({
+        message:
+          error.massage ||
+          "Somthing error occured while creating the restaurant.",
+      });
+    });
 };
 
+// Delete
 exports.delete = async (req, res) => {
   const id = req.params.id;
   try {
-    const num = await Restaurant.destroy({ where: { id } });
+    const num = await Restaurant.destroy({
+      where: { id: id },
+    });
+
     if (num === 1) {
-      return res.send({ message: "Restaurant deleted successfully" });
+      res.send({ message: "Restaurant was deleted successfully" });
+    } else {
+      res.send({
+        message: "Cannot delete restaurant with id=" + id + ".",
+      });
     }
-    res.status(404).send({ message: "Cannot delete restaurant with id " + id });
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: error.message || "Something error occurred." });
+    res.status(500).send({
+      message: "Error deleting restaurant with id=" + id,
+      error: error.message,
+    });
   }
 };
